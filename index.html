@@ -1,0 +1,42 @@
+
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Teste Push - Nova Meds</title>
+</head>
+<body style="background: #111; color: #fff; font-family: sans-serif; padding: 2rem;">
+  <h1>Teste de Push Notifications - Nova Meds</h1>
+  <input id="tokenInput" placeholder="Insere o token FCM aqui..." style="width: 100%; padding: 0.5rem; margin-bottom: 1rem;" />
+  <button onclick="enviarPush()" style="padding: 0.5rem 1rem;">Enviar Push</button>
+
+  <pre id="resposta" style="margin-top:2rem; background:#222; padding:1rem;"></pre>
+
+  <script>
+    function enviarPush() {
+      const token = document.getElementById('tokenInput').value.trim();
+      if (!token) return alert('Insere o token FCM primeiro!');
+
+      fetch('/.netlify/functions/sendPush', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to: token,
+          notification: {
+            title: "Nova Meds",
+            body: "Push enviado via Netlify Function!",
+            icon: "/icons/pill_icon_128x128.png"
+          }
+        })
+      })
+      .then(r => r.json())
+      .then(data => {
+        document.getElementById('resposta').textContent = JSON.stringify(data, null, 2);
+      })
+      .catch(err => {
+        document.getElementById('resposta').textContent = 'Erro: ' + err.message;
+      });
+    }
+  </script>
+</body>
+</html>
